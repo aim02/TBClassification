@@ -4,6 +4,8 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 from tensorflow.keras.applications.mobilenet_v3 import preprocess_input
+from huggingface_hub import from_pretrained_keras
+import torch
 
 # Set page configuration
 st.set_page_config(
@@ -15,7 +17,7 @@ st.set_page_config(
 # Load your trained model
 @st.cache_resource
 def load_my_model():
-    model = load_model('MobileNetV3_BestModel.h5')  # Ganti dengan path model Anda
+    model = from_pretrained_keras('reaim70/tbclassification')  # Ganti dengan path model Anda
     return model
 
 model = load_my_model()

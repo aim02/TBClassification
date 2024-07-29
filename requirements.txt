@@ -4,3 +4,5 @@ streamlit
 tensorflow
 Pillow
 tf-keras
+torch
+huggingface_hub
