@@ -2,14 +2,15 @@ import streamlit as st
 from PIL import Image
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.models import load_model
-from tensorflow.keras.applications.mobilenet_v3 import preprocess_input
 from huggingface_hub import from_pretrained_keras
 import torch
+from tensorflow.keras.applications import mobilenet_v3
+
+preprocess_input = mobilenet_v3.preprocess_input
 
 # Set page configuration
 st.set_page_config(
-    page_title="Deteksi Tuberkulosis",
+    page_title="Klasifikasi Tuberkulosis",
     page_icon="🩺",
     layout="centered",
 )
@@ -45,7 +46,7 @@ def predict(image):
         return "Tuberkulosis"
 
 # Title of the web app
-st.title("Deteksi Tuberkulosis")
+st.title("Klasifikasi Tuberkulosis")
 
 # Center the icon representation
 st.markdown(
@@ -70,15 +71,15 @@ with st.container():
             st.image(image, caption='Gambar yang diupload', use_column_width=True)
 
         with col2:
-            if st.button("Deteksi"):
+            if st.button("Klasifikasi"):
                 # Display loading message
-                with st.spinner('Mendeteksi...'):
+                with st.spinner('Menklasifikasi...'):
                     # Prediction using the loaded model
                     result = predict(image)
                 
                 # Display result below the button
-                st.subheader("Hasil Deteksi")
+                st.subheader("Hasil Klasifikasi")
                 if result == "Normal":
-                    st.success("Terdeteksi Normal")
+                    st.success("Terklasifikasi Normal")
                 else:
-                    st.error("Terdeteksi Tuberkulosis")
+                    st.error("Terklasifikasi Tuberkulosis")
