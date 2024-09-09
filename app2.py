@@ -1,60 +1,80 @@
 import streamlit as st
+import tensorflow as tf
 from PIL import Image
 import numpy as np
-from huggingface_hub import from_pretrained_keras
-from tensorflow.keras.applications import mobilenet_v3
-
-preprocess_input = mobilenet_v3.preprocess_input
+from tensorflow.keras.applications import EfficientNetV2B0
+from tensorflow.keras.applications.efficientnet_v2 import preprocess_input as preprocess_input_efficientnet
+from tensorflow.keras.models import load_model
+from huggingface_hub import hf_hub_download
 
 # Set page configuration
 st.set_page_config(
-    page_title="Klasifikasi Tuberkulosis",
+    page_title="Klasifikasi Rontgen Dada",
     page_icon="🩺",
     layout="centered",
 )
 
-# Load your trained model
+# Load detection model for chest X-ray vs non-chest X-ray
+def load_detection_model():
+    # Load EfficientNetV2B0 model for detection
+    model_path = '1xray_vs_non_xray_efficientnetv2b0_model.keras'
+    model = load_model(model_path)
+    return model
+
+detection_model = load_detection_model()
+
+# Load MobileNetV3 model for classification (Normal vs Tuberkulosis)
 @st.cache_resource
 def load_my_model():
-    model = from_pretrained_keras('reaim70/tbclassification')  # Ganti dengan path model Anda
+    # Download the MobileNetV3 model from the Hugging Face Hub
+    model_path = hf_hub_download(repo_id="reaim70/MobileNetV3.keras", filename="MobileNetV3.keras")
+    model = load_model(model_path)
     return model
 
 model = load_my_model()
 
-# Fungsi prediksi menggunakan model yang dimuat
+# Fungsi prediksi menggunakan model klasifikasi
 def predict(image):
-    # Preprocess the image to match the input shape the model expects
+    # Preprocess the image to match the input shape the EfficientNetV2B0 model expects
     img = image.resize((224, 224))  # Ganti ukuran sesuai dengan input model Anda
     img_array = np.array(img)
-
+    
     # Ensure the image has 3 channels (RGB)
-    if img_array.shape[-1] == 3:  # Already RGB
-        img_array = preprocess_input(img_array)
-    else:  # Grayscale or other format
-        img_array = np.stack((img_array,) * 3, axis=-1)  # Convert to RGB
-        img_array = preprocess_input(img_array)
-
+    if img_array.ndim == 2:  # If grayscale
+        img_array = np.stack((img_array,) * 3, axis=-1)
+    elif img_array.shape[-1] == 4:  # If RGBA
+        img_array = img_array[:, :, :3]
+    
+    img_array = img_array / 255.0  # Normalize
     img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
+    img_array = preprocess_input_efficientnet(img_array)  # Preprocessing
+    
     prediction = model.predict(img_array)
+    return 'Normal' if prediction[0][0] > prediction[0][1] else 'Tuberkulosis'
 
-    # Assuming model output is probability, choose the class with highest probability
-    if prediction[0][0] > prediction[0][1]:
-        return "Normal"
-    else:
-        return "Tuberkulosis"
-
-# Check if the uploaded image is likely a chest X-ray based on dimensions
 def is_chest_xray(image):
-    width, height = image.size
-    aspect_ratio = width / height
-    # Typical chest X-ray aspect ratio is approximately 0.7 - 1.3
-    if 0.7 < aspect_ratio < 1.3:
-        return True
-    else:
-        return False
+    # Preprocess the image to match the input shape the detection model expects
+    img = image.resize((224, 224))  # Resize to match the input size of the detection model
+    img_array = np.array(img)
+
+    # Convert grayscale or RGBA to RGB if necessary
+    if img_array.ndim == 2:  # Grayscale
+        img_array = np.stack((img_array,) * 3, axis=-1)
+    elif img_array.shape[-1] == 4:  # RGBA
+        img_array = img_array[:, :, :3]
+    
+    img_array = img_array / 255.0  # Normalize to [0, 1] range
+    img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
+    
+    # Perform detection
+    results = detection_model.predict(img_array)
+    
+    # Example check, assuming results contain a score or classification
+    detection_score = results[0][0]  # Adjust based on your model output
+    return detection_score > 0.5  # Example threshold
 
 # Title of the web app
-st.title("Klasifikasi Tuberkulosis")
+st.title("Klasifikasi Rontgen Dada")
 
 # Center the icon representation
 st.markdown(
@@ -86,12 +106,12 @@ with st.container():
                     if not is_chest_xray(image):
                         st.warning("Gambar yang diunggah mungkin bukan rontgen dada. Pastikan Anda mengunggah rontgen dada.")
                     else:
-                        # Prediction using the loaded model
+                        # Prediction using the loaded EfficientNetV2B0 model
                         result = predict(image)
                         
                         # Display result below the button
                         st.subheader("Hasil Klasifikasi")
                         if result == "Normal":
-                            st.success("Terklasifikasi Normal")
+                            st.success("Gambar terklasifikasi sebagai Normal")
                         else:
-                            st.error("Terklasifikasi Tuberkulosis")
+                            st.error("Gambar terklasifikasi sebagai Tuberkulosis")
