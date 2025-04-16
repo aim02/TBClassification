@@ -45,7 +45,7 @@ Semua model menggunakan **pre-trained weights dari ImageNet**.
 1. **Pre-processing**: resize, augmentasi, dan normalisasi gambar.
 2. **Pelatihan**: menggunakan transfer learning dan fine-tuning.
 3. **Evaluasi**: berdasarkan akurasi, precision, recall, F1-score, dan confusion matrix.
-4. **Implementasi**: aplikasi web berbasis [Streamlit]([https://streamlit.io/](https://tbclassification.streamlit.app/)).
+4. **Implementasi**: aplikasi web berbasis [Streamlit](https://streamlit.io/).
 
 ---
 
@@ -64,7 +64,10 @@ Model **MobileNetV3** menunjukkan performa terbaik:
 
 ## 🌐 Aplikasi Web
 
-Aplikasi memungkinkan pengguna mengunggah citra rontgen dada dan memperoleh hasil klasifikasi (Normal/TBC) secara otomatis dan interaktif melalui antarmuka web sederhana.
+🖥️ Kunjungi aplikasi klasifikasi TBC secara online:  
+👉 [https://tbclassification.streamlit.app/](https://tbclassification.streamlit.app/)
+
+Pengguna dapat mengunggah citra rontgen dada dan memperoleh hasil klasifikasi (Normal/TBC) secara otomatis dan interaktif melalui antarmuka web sederhana.
 
 ---
 
@@ -76,3 +79,4 @@ Aplikasi memungkinkan pengguna mengunggah citra rontgen dada dan memperoleh hasi
 - Visual Studio Code
 - NumPy, Matplotlib, Scikit-learn
 
+---
