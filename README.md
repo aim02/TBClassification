@@ -1,6 +1,6 @@
 # 📌 Deteksi Tuberkulosis pada Citra Rontgen Dada menggunakan CNN
 
-Skripsi ini membahas implementasi **Convolutional Neural Network (CNN)** untuk klasifikasi penyakit **Tuberkulosis (TBC)** pada citra **rontgen dada**, menggunakan pendekatan **transfer learning** dan integrasi dengan aplikasi web berbasis **Streamlit**.
+Proyek ini membahas implementasi **Convolutional Neural Network (CNN)** untuk klasifikasi penyakit **Tuberkulosis (TBC)** pada citra **rontgen dada**, menggunakan pendekatan **transfer learning** dan integrasi dengan aplikasi web berbasis **Streamlit**.
 
 ---
 
@@ -10,7 +10,7 @@ Tuberkulosis merupakan penyakit menular yang berdampak besar, khususnya di negar
 
 ---
 
-## 🎯 Tujuan Penelitian
+## 🎯 Tujuan
 
 - Meningkatkan akurasi deteksi TBC menggunakan CNN.
 - Menerapkan transfer learning dengan berbagai arsitektur pre-trained.
